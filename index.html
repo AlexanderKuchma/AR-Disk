@@ -31,6 +31,7 @@
     <model-viewer 
         id="model-viewer"
         alt="A 3D model" 
+        src=""
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         camera-controls 
@@ -49,6 +50,7 @@
         // Получаем параметр URL для выбора модели
         const urlParams = new URLSearchParams(window.location.search);
         const modelFile = urlParams.get('model') || 'https://drive.google.com/uc?export=view&id=1qUXNcL5ZcdnHKVk42KJT83sSh9AzIRhk';
+        console.log('Model file URL:', modelFile);
 
         modelViewer.src = modelFile;
 
