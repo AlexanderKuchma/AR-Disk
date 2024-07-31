@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR.js and Three.js Example</title>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.118.3/build/three.module.js"></script>
-  <script src="https://unpkg.com/three@0.167.0/examples/jsm/loaders/GLTFLoader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Model Viewer</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-    <a-marker preset="hiro">
-      <a-entity id="model" rotation="0 0 0" scale="0.1 0.1 0.1"></a-entity>
-    </a-marker>
-    <a-entity camera></a-entity>
-  </a-scene>
+<body>
+    <a-scene embedded arjs>
+        <a-marker preset="hiro">
+            <a-entity id="model" rotation="0 180 0" scale="0.5 0.5 0.5"></a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.module.js';
+        import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/loaders/GLTFLoader.js';
+        import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/loaders/RGBELoader.js';
+        import 'https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-v1.6.0.min.js';
+        import 'https://cdn.jsdelivr.net/npm/aframe@1.6.0/aframe-ar.js';
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var loader = new THREE.GLTFLoader();
-      loader.load('models/Scaniverse_2024-07-15_170330.glb', function (gltf) {
-        var model = gltf.scene;
-        model.scale.set(0.1, 0.1, 0.1);
-        document.getElementById('model').object3D.add(model);
-      }, undefined, function (error) {
-        console.error('An error occurred while loading the model:', error);
-      });
-    });
-  </script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modelEntity = document.getElementById('model');
+            const loader = new GLTFLoader();
+            loader.load('./models/Scaniverse_2024-07-15_170330.glb', (gltf) => {
+                modelEntity.object3D.add(gltf.scene);
+            }, undefined, (error) => {
+                console.error('An error occurred while loading the model:', error);
+            });
+        });
+    </script>
 </body>
 </html>
 
