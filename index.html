@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Model Viewer</title>
+    <link rel="stylesheet" href="main.css">
     <style>
         body { margin: 0; overflow: hidden; }
     </style>
@@ -15,16 +16,14 @@
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
-    <script type="module">
-        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.module.js';
-        import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/loaders/GLTFLoader.js';
-        import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/loaders/RGBELoader.js';
-        import 'https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-v1.6.0.min.js';
-        import 'https://cdn.jsdelivr.net/npm/aframe@1.6.0/aframe-ar.js';
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.2.0/dist/aframe-master.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modelEntity = document.getElementById('model');
-            const loader = new GLTFLoader();
+            const loader = new THREE.GLTFLoader();
             loader.load('./models/Scaniverse_2024-07-15_170330.glb', (gltf) => {
                 modelEntity.object3D.add(gltf.scene);
             }, undefined, (error) => {
@@ -34,4 +33,5 @@
     </script>
 </body>
 </html>
+
 
