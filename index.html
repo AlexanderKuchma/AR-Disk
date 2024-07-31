@@ -1,88 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AR Viewer</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        model-viewer { width: 100vw; height: 100vh; }
-        .ar-button {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 50px;
-            font-size: 16px;
-            background-color: #fff;
-            color: #000;
-            border: 2px solid #000;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR.js and Three.js Example</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/RGBELoader.js"></script>
 </head>
-<body>
-    <model-viewer 
-        id="model-viewer"
-        alt="A 3D model" 
-        src=""
-        ar 
-        ar-modes="webxr scene-viewer quick-look" 
-        camera-controls 
-        auto-rotate 
-        interaction-prompt="auto" 
-        ar-scale="auto" 
-        ar-placement="floor">
-    </model-viewer>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-marker preset="hiro">
+      <a-entity id="model" rotation="0 0 0" scale="0.1 0.1 0.1"></a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
 
-    <button class="ar-button" id="ar-button">Открыть</button>
+  <script>
+    // Three.js setup
+    var scene = document.querySelector('a-scene').object3D;
+    var loader = new THREE.GLTFLoader();
 
-    <script>
-        const modelViewer = document.getElementById('model-viewer');
-        const arButton = document.getElementById('ar-button');
-
-        // Получаем параметр URL для выбора модели
-        const urlParams = new URLSearchParams(window.location.search);
-        const modelFile = urlParams.get('model') || 'https://drive.google.com/uc?export=view&id=1qUXNcL5ZcdnHKVk42KJT83sSh9AzIRhk';
-        console.log('Model file URL:', modelFile);
-
-        modelViewer.src = modelFile;
-
-        arButton.addEventListener('click', () => {
-            console.log('AR button clicked');
-            modelViewer.activateAR();
+    // Load HDR environment map
+    var rgbeLoader = new THREE.RGBELoader();
+    rgbeLoader.load('textures/photo_studio_01_1k.hdr', function(texture) {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      scene.environment = texture;
+      
+      // Load GLTF model
+      loader.load('models/Scaniverse_2024-07-15_170330.glb', function(gltf) {
+        var model = gltf.scene;
+        model.traverse(function(node) {
+          if (node.isMesh) {
+            node.castShadow = true;
+            node.receiveShadow = true;
+          }
         });
-
-        modelViewer.addEventListener('load', () => {
-            console.log('Model loaded');
-        });
-
-        modelViewer.addEventListener('ar-status', (event) => {
-            console.log('AR status changed:', event.detail.status);
-            if (event.detail.status === 'failed') {
-                console.log('AR failed');
-            } else if (event.detail.status === 'session-started') {
-                console.log('AR session started');
-            }
-        });
-
-        modelViewer.addEventListener('error', (event) => {
-            console.error('Error:', event.detail);
-        });
-
-        modelViewer.addEventListener('ar-button-tapped', () => {
-            console.log('AR button tapped');
-        });
-
-        modelViewer.addEventListener('ar-button-text', (event) => {
-            console.log('AR button text:', event.detail.text);
-        });
-    </script>
+        model.scale.set(0.1, 0.1, 0.1);
+        document.getElementById('model').object3D.add(model);
+      }, undefined, function(error) {
+        console.error('An error happened', error);
+      });
+    });
+  </script>
 </body>
 </html>
