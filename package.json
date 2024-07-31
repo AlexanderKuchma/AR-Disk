@@ -1,0 +1,10 @@
+{
+  "name": "ar-markers",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "three": "^0.167.0",
+    "aframe": "^1.6.0",
+    "ar.js": "^3.4.5"
+  }
+}
