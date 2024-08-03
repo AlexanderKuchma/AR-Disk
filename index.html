@@ -76,7 +76,16 @@
             const kalmanZ = new SimpleKalmanFilter();
 
             const positions = [];
-            const maxPositions = 5;
+            const maxPositions = 10; // Увеличиваем количество позиций для усреднения
+
+            function exponentialSmoothing(newValue, prevValue, alpha) {
+                return alpha * newValue + (1 - alpha) * prevValue;
+            }
+
+            let smoothedX = 0;
+            let smoothedY = 0;
+            let smoothedZ = 0;
+            const alpha = 0.5; // Коэффициент сглаживания для экспоненциального скользящего среднего
 
             AFRAME.registerComponent('markerhandler', {
                 init: function() {
@@ -108,7 +117,11 @@
                     });
                     averagePosition.divideScalar(positions.length);
 
-                    modelEntity.object3D.position.copy(averagePosition);
+                    smoothedX = exponentialSmoothing(averagePosition.x, smoothedX, alpha);
+                    smoothedY = exponentialSmoothing(averagePosition.y, smoothedY, alpha);
+                    smoothedZ = exponentialSmoothing(averagePosition.z, smoothedZ, alpha);
+
+                    modelEntity.object3D.position.set(smoothedX, smoothedY, smoothedZ);
                 }
             });
 
