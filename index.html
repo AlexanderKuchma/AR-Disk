@@ -13,7 +13,6 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script>
     <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
 </head>
 <body>
     <a-scene embedded arjs>
@@ -33,9 +32,48 @@
                 console.error('An error occurred while loading the model:', error);
             });
 
-            const kalmanX = new KalmanFilter();
-            const kalmanY = new KalmanFilter();
-            const kalmanZ = new KalmanFilter();
+            class SimpleKalmanFilter {
+                constructor(r = 1, q = 1, a = 1, b = 0, c = 1) {
+                    this.r = r; // Noise covariance
+                    this.q = q; // Process covariance
+                    this.a = a; // State vector
+                    this.b = b; // Control vector
+                    this.c = c; // Measurement vector
+                    this.cov = NaN; // Covariance
+                    this.x = NaN; // Value
+                }
+
+                filter(z, u = 0) {
+                    if (isNaN(this.x)) {
+                        this.x = 1 / this.c * z;
+                        this.cov = 1 / this.c * this.q * (1 / this.c);
+                    } else {
+                        // Compute prediction
+                        const predX = this.predict(u);
+                        const predCov = this.uncertainty();
+
+                        // Kalman gain
+                        const k = predCov * this.c * (1 / (this.c * predCov * this.c + this.r));
+
+                        // Correction
+                        this.x = predX + k * (z - this.c * predX);
+                        this.cov = predCov - k * this.c * predCov;
+                    }
+                    return this.x;
+                }
+
+                predict(u = 0) {
+                    return this.a * this.x + this.b * u;
+                }
+
+                uncertainty() {
+                    return this.a * this.cov * this.a + this.q;
+                }
+            }
+
+            const kalmanX = new SimpleKalmanFilter();
+            const kalmanY = new SimpleKalmanFilter();
+            const kalmanZ = new SimpleKalmanFilter();
 
             const positions = [];
             const maxPositions = 5;
