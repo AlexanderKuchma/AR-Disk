@@ -32,7 +32,15 @@
             });
         });
     </script>
+    <script>
+        // Ensure full screen on mobile devices
+        window.addEventListener('resize', () => {
+            const scene = document.querySelector('a-scene');
+            scene.style.width = window.innerWidth + 'px';
+            scene.style.height = window.innerHeight + 'px';
+        });
+
+        window.dispatchEvent(new Event('resize')); // Trigger resize to set initial size
+    </script>
 </body>
 </html>
-
-
