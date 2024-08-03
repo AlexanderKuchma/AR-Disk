@@ -10,9 +10,10 @@
         a-scene { position: absolute; width: 100%; height: 100%; }
     </style>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script>
-<script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script>
+    <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
 </head>
 <body>
     <a-scene embedded arjs>
@@ -31,8 +32,52 @@
             }, undefined, (error) => {
                 console.error('An error occurred while loading the model:', error);
             });
+
+            const kalmanX = new KalmanFilter();
+            const kalmanY = new KalmanFilter();
+            const kalmanZ = new KalmanFilter();
+
+            const positions = [];
+            const maxPositions = 5;
+
+            AFRAME.registerComponent('markerhandler', {
+                init: function() {
+                    this.el.addEventListener('markerFound', () => {
+                        console.log('Marker Found');
+                    });
+                    this.el.addEventListener('markerLost', () => {
+                        console.log('Marker Lost');
+                    });
+                },
+                tick: function() {
+                    const position = modelEntity.object3D.position;
+
+                    const kalmanPosition = new THREE.Vector3(
+                        kalmanX.filter(position.x),
+                        kalmanY.filter(position.y),
+                        kalmanZ.filter(position.z)
+                    );
+
+                    positions.push(kalmanPosition);
+
+                    if (positions.length > maxPositions) {
+                        positions.shift();
+                    }
+
+                    const averagePosition = new THREE.Vector3(0, 0, 0);
+                    positions.forEach(pos => {
+                        averagePosition.add(pos);
+                    });
+                    averagePosition.divideScalar(positions.length);
+
+                    modelEntity.object3D.position.copy(averagePosition);
+                }
+            });
+
+            document.querySelector('a-marker').setAttribute('markerhandler', '');
         });
     </script>
 </body>
 </html>
+
 
