@@ -9,14 +9,14 @@
         body { margin: 0; overflow: hidden; }
         a-scene { position: absolute; width: 100%; height: 100%; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.2.0/dist/aframe-master.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
 </head>
 <body>
     <a-scene embedded arjs>
         <a-marker preset="hiro">
-            <a-entity id="model" gltf-model="#model-asset" scale="2 2 2" position="0 0 0" rotation="0 180 0"></a-entity>
+            <a-entity id="model" rotation="0 180 0" position="0 0 0" scale="1 1 1"></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -32,15 +32,6 @@
             });
         });
     </script>
-    <script>
-        // Ensure full screen on mobile devices
-        window.addEventListener('resize', () => {
-            const scene = document.querySelector('a-scene');
-            scene.style.width = window.innerWidth + 'px';
-            scene.style.height = window.innerHeight + 'px';
-        });
-
-        window.dispatchEvent(new Event('resize')); // Trigger resize to set initial size
-    </script>
 </body>
 </html>
+
